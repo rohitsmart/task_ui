@@ -1,0 +1,7 @@
+npm install -g react-native-cli
+npx react-native init task
+to diagnoisi npx react-native doctor
+npx react-native start
+
+expo yarn create expo-app AwesomeProject
+ yarn android
