@@ -1,34 +1,44 @@
-import React from 'react';
-import { StatusBar, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import CustomButton from './component/CustomButton';
 
 export default function App() {
+  const [loading, setLoading] = useState(false); // State to manage loading state
+  const [responseData, setResponseData] = useState(null); // State to store API response data
+  const apiUrl = 'YOUR_API_ENDPOINT'; // Your API endpoint
+
+  const callApi = async () => {
+    try {
+      setLoading(true); // Set loading to true when API call starts
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+      setResponseData(data); // Set response data in state
+    } catch (error) {
+      console.error('API call error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>Task Reminder</Text>
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.inputText}
-          placeholder="Email..."
-          placeholderTextColor="#003f5c"
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-      </View>
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.inputText}
-          placeholder="Password..."
-          placeholderTextColor="#003f5c"
-          secureTextEntry={true}
-        />
-      </View>
-      <TouchableOpacity style={styles.loginBtn}>
-        <Text style={styles.loginText}>LOGIN</Text>
-      </TouchableOpacity>
-      <TouchableOpacity>
-        <Text style={styles.signupText}>Signup</Text>
-      </TouchableOpacity>
-      <StatusBar style="auto" />
+      <CustomButton
+        title={loading ? 'Loading...' : 'Call API'}
+        onPress={callApi}
+        disabled={loading}
+      />
+
+      {/* Display API response */}
+      {responseData && (
+        <View style={styles.responseContainer}>
+          <Text style={styles.responseText}>
+            API Response:
+          </Text>
+          <Text style={styles.responseData}>
+            {JSON.stringify(responseData, null, 2)}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -36,45 +46,24 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#003f5c',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
-  logo: {
+  responseContainer: {
+    marginTop: 20,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+  },
+  responseText: {
+    fontSize: 16,
     fontWeight: 'bold',
-    fontSize: 50,
-    color: '#fb5b5a',
-    marginBottom: 40,
+    marginBottom: 5,
   },
-  inputView: {
-    width: '80%',
-    backgroundColor: '#465881',
-    borderRadius: 25,
-    height: 50,
-    marginBottom: 20,
-    justifyContent: 'center',
-    padding: 20,
-  },
-  inputText: {
-    height: 50,
-    color: 'white',
-  },
-  loginBtn: {
-    width: '80%',
-    backgroundColor: '#fb5b5a',
-    borderRadius: 25,
-    height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 40,
-    marginBottom: 10,
-  },
-  loginText: {
-    color: 'white',
-  },
-  signupText: {
-    color: 'white',
-    fontSize: 18,
-    marginTop: 25,
+  responseData: {
+    fontSize: 14,
+    color: '#333',
   },
 });
