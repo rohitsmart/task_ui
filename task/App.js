@@ -1,41 +1,68 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import CustomButton from './component/CustomButton';
+import axios from 'axios';
+
+const LOGIN_API_URL = "http://179.61.188.36:9000/api/employee/login";
+const ATTENDANCE_API_URL = "http://179.61.188.36:9000/api/attendence/web-online";
+const EMAIL = "rohit.kumar@perfectkode.com";
+const PASSWORD = "Rohit@1011";
 
 export default function App() {
-  const [loading, setLoading] = useState(false); // State to manage loading state
-  const [responseData, setResponseData] = useState(null); // State to store API response data
-  const apiUrl = 'YOUR_API_ENDPOINT'; // Your API endpoint
+  const [loading, setLoading] = useState(false);
+  const [responseData, setResponseData] = useState(null);
+  const [token, setToken] = useState(null);
 
-  const callApi = async () => {
+  const loginAndGetToken = async () => {
     try {
-      setLoading(true); // Set loading to true when API call starts
-      const response = await fetch(apiUrl);
-      const data = await response.json();
-      setResponseData(data); // Set response data in state
+      setLoading(true);
+      const response = await axios.post(LOGIN_API_URL, {
+        email: EMAIL,
+        password: PASSWORD
+      });
+      const { token } = response.data.auth;
+      setToken(token);
     } catch (error) {
-      console.error('API call error:', error);
+      console.error('Login error:', error);
     } finally {
       setLoading(false);
     }
   };
 
+  const markAttendance = async () => {
+    try {
+      setLoading(true);
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+      const response = await axios.post(ATTENDANCE_API_URL, null, { headers });
+      setResponseData(response.data);
+    } catch (error) {
+      console.error('Mark attendance error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loginAndGetToken();
+  }, []);
+
   return (
     <View style={styles.container}>
       <CustomButton
-        title={loading ? 'Loading...' : 'Call API'}
-        onPress={callApi}
-        disabled={loading}
+        title={loading ? 'Loading...' : 'Mark Attendance'}
+        onPress={markAttendance}
+        disabled={loading || !token}
       />
 
-      {/* Display API response */}
       {responseData && (
         <View style={styles.responseContainer}>
           <Text style={styles.responseText}>
             API Response:
           </Text>
           <Text style={styles.responseData}>
-            {JSON.stringify(responseData, null, 2)}
+            {JSON.stringify(responseData.message, null, 2)}
           </Text>
         </View>
       )}
