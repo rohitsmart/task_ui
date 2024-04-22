@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "task",
-    "slug": "task",
+    "slug": "attendance",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bfdc08bc-1ad5-401a-bc6c-736d2ee32e43"
+      }
+    },
+    "owner": "rohitsmart95"
   }
 }
