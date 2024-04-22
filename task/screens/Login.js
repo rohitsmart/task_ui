@@ -3,15 +3,20 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import CustomButton from '../component/CustomButton';
 import { login } from '../utils/api';
+import { useToast } from "react-native-toast-notifications";
 
 const LoginScreen = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const toast = useToast();
+
 
   const handleLogin = async () => {
     try {
       const token = await login(email, password);
       onLogin(token);
+      toast.show("login success");
+
     } catch (error) {
       console.error('Login error:', error);
     }

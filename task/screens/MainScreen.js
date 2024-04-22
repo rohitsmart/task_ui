@@ -2,18 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import CustomButton from '../component/CustomButton';
 import { markAttendance } from '../utils/api';
+import { useToast } from "react-native-toast-notifications";
 
 const MainScreen = ({ token }) => {
   const [loading, setLoading] = useState(false);
-  const [responseData, setResponseData] = useState(null);
+  const toast = useToast();
 
   const handleMarkAttendance = async () => {
     try {
       setLoading(true);
       const response = await markAttendance(token);
-      setResponseData(response.data);
+      toast.show("success");
     } catch (error) {
-      console.error('Mark attendance error:', error);
+      toast.show("error",error);
     } finally {
       setLoading(false);
     }
@@ -26,17 +27,6 @@ const MainScreen = ({ token }) => {
         onPress={handleMarkAttendance}
         disabled={loading}
       />
-
-      {responseData && (
-        <View style={styles.responseContainer}>
-          <Text style={styles.responseText}>
-            API Response:
-          </Text>
-          <Text style={styles.responseData}>
-            {JSON.stringify(responseData.message, null, 2)}
-          </Text>
-        </View>
-      )}
     </View>
   );
 };
